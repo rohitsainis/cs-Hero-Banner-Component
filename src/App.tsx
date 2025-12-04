@@ -1,7 +1,6 @@
 import { PersonalizedHeroBanner } from './personalization/components/PersonalizedHeroBanner';
 
 function App() {
-  // TODO: replace with your real hero_banner entry UID from Contentstack
   const heroEntryUid = 'blt299367f0c8134855';
 
   return (

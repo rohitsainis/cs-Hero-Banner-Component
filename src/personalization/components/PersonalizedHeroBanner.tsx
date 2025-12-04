@@ -76,7 +76,6 @@ export const PersonalizedHeroBanner: React.FC<PersonalizedHeroBannerProps> = ({
             />
           )}
 
-          {/* CTA removed */}
         </div>
 
         {/* Right image */}

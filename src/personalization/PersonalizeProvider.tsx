@@ -27,7 +27,6 @@ type PersonalizeProviderProps = {
   apiKey: string;
   deliveryToken: string;
   environment: string;
-  // keep region prop for future, but optional
   region?: 'NA' | 'EU' | 'AZURE-NA' | 'AZURE-EU';
 };
 
@@ -53,7 +52,6 @@ export const PersonalizeProvider: React.FC<PersonalizeProviderProps> = ({
         api_key: apiKey,
         delivery_token: deliveryToken,
         environment,
-        // no region for now – let SDK use default / host
       });
 
       setStack(csStack);

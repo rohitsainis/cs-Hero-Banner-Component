@@ -4,8 +4,8 @@ import { usePersonalizeContext } from '../PersonalizeProvider';
 export type HeroBannerEntry = any;
 
 type UseHeroBannerParams = {
-  contentTypeUid: string; // e.g. "hero_banner"
-  entryUid: string;       // UID of the hero_banner entry
+  contentTypeUid: string; 
+  entryUid: string;
 };
 
 export function useHeroBanner({ contentTypeUid, entryUid }: UseHeroBannerParams) {
@@ -24,7 +24,6 @@ export function useHeroBanner({ contentTypeUid, entryUid }: UseHeroBannerParams)
       entryUid,
     });
 
-    // If provider itself had an error, don't try to fetch, just show error
     if (ctxError) {
       setError(ctxError);
       setLoading(false);
