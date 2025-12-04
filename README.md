@@ -1,73 +1,139 @@
-# React + TypeScript + Vite
+# Contentstack Hero Banner Component (POC)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains a reusable **React wrapper component** for rendering a **Hero Banner** from Contentstack.
+UI developers can install it directly from GitHub and use it without writing Contentstack Delivery API calls or parsing JSON.
 
-Currently, two official plugins are available:
+This POC currently supports:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+* Contentstack Delivery SDK integration
+* Rendering a Hero Banner from a single entry
+* Plug‑and‑play usage via `<PersonalizeProvider />` and `<PersonalizedHeroBanner />`
 
-## React Compiler
+Personalization (Contentstack Personalize Edge SDK) will be added later.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 1. Installation (UI Project)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Install this wrapper directly from GitHub:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install git+https://github.com/rohitsainis/cs-Hero-Banner-Component.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+or
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+yarn add git+https://github.com/rohitsainis/cs-Hero-Banner-Component.git
 ```
+
+Import from the package name defined in this repo’s `package.json`:
+
+```ts
+import {
+  PersonalizeProvider,
+  PersonalizedHeroBanner
+} from 'cs-hero-banner-component';
+```
+
+---
+
+## 2. Required Contentstack Values
+
+UI developers will need the following values from Contentstack:
+
+| Value                | Where to Find                              |
+| -------------------- | ------------------------------------------ |
+| **API Key**          | Stack Settings → API Keys                  |
+| **Delivery Token**   | Stack Settings → Tokens → Delivery Tokens  |
+| **Environment Name** | Stack Settings → Environments              |
+| **Content Type UID** | Content Model → Hero Banner → UID          |
+| **Entry UID**        | Content → Hero Banner → Select Entry → UID |
+
+These can be stored in `.env` or passed directly as props.
+
+---
+
+## 3. Add Environment Variables (recommended)
+
+Example for a Vite-based UI project:
+
+```env
+VITE_CS_API_KEY=YOUR_API_KEY
+VITE_CS_DELIVERY_TOKEN=YOUR_DELIVERY_TOKEN
+VITE_CS_ENVIRONMENT=development
+VITE_CS_HERO_CONTENT_TYPE_UID=herobanner
+VITE_CS_HERO_ENTRY_UID=YOUR_HERO_ENTRY_UID
+```
+
+---
+
+## 4. Wrap the App with `PersonalizeProvider`
+
+In the UI project’s `main.tsx`:
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+import { PersonalizeProvider } from 'cs-hero-banner-component';
+
+const apiKey = import.meta.env.VITE_CS_API_KEY;
+const deliveryToken = import.meta.env.VITE_CS_DELIVERY_TOKEN;
+const environment = import.meta.env.VITE_CS_ENVIRONMENT;
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <PersonalizeProvider
+      apiKey={apiKey}
+      deliveryToken={deliveryToken}
+      environment={environment}
+    >
+      <App />
+    </PersonalizeProvider>
+  </React.StrictMode>,
+);
+```
+
+---
+
+## 5. Render the Hero Banner on Any Page
+
+Example `HomePage.tsx`:
+
+```tsx
+import { PersonalizedHeroBanner } from 'cs-hero-banner-component';
+
+export default function HomePage() {
+  return (
+    <div>
+      <PersonalizedHeroBanner
+        contentTypeUid={import.meta.env.VITE_CS_HERO_CONTENT_TYPE_UID}
+        entryUid={import.meta.env.VITE_CS_HERO_ENTRY_UID}
+      />
+
+      <div style={{ padding: 24 }}>
+        <h2>Below the hero banner</h2>
+        <p>This is normal page content under the hero section.</p>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## 6. Running the UI App
+
+Once everything is configured:
+
+```bash
+npm run dev
+```
+
+If the Contentstack values are correct, the hero banner will render successfully.
+
+---
+
+
