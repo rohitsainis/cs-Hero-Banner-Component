@@ -18,6 +18,7 @@ const App: React.FC = () => {
         experienceId={HERO_EXPERIENCE_ID}
         contentTypeUid={HERO_CONTENT_TYPE_UID}
         fallbackEntryUid={FALLBACK_HERO_ENTRY_UID}
+        travelType="Economy" // 👈 now controlled from UI
         resolveVariant={resolveVariant}
       />
     </div>

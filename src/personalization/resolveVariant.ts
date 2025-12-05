@@ -1,7 +1,10 @@
 // src/personalization/resolveVariant.ts
 
 import Personalize from '@contentstack/personalize-edge-sdk';
-import type { PersonalizeVariantResolver } from './personalizeTypes';
+import type {
+  PersonalizeVariantResolver,
+  TravelType,
+} from './personalizeTypes';
 
 // 🔐 From  "Travel Personalization" project
 const PERSONALIZE_PROJECT_UID = '692f4df871b6084e28958c5f';
@@ -10,21 +13,21 @@ const PERSONALIZE_PROJECT_UID = '692f4df871b6084e28958c5f';
 const ATTRIBUTE_KEY_FOR_TRAVEL_TYPE = 'travel_type';
 
 // These are the values you used in the audience rules
-type TravelType = 'luxury' | 'Economy' | 'Budget';
-
-// TODO: wire this from UI (dropdown, query param, etc.)
-const CURRENT_TRAVEL_TYPE: TravelType = 'Budget';
+// TravelType is imported from personalizeTypes.ts
 
 export const resolveVariant: PersonalizeVariantResolver = async ({
   experienceId,
+  travelType,
 }) => {
+  const travelTypeToSend: TravelType = travelType ?? 'Budget';
+
   console.log('Resolving variant for experience:', experienceId);
-  console.log('Sending Travel Type to Personalize:', CURRENT_TRAVEL_TYPE);
+  console.log('Sending Travel Type to Personalize:', travelTypeToSend);
 
   try {
     const sdk = await Personalize.init(PERSONALIZE_PROJECT_UID, {
       liveAttributes: {
-        [ATTRIBUTE_KEY_FOR_TRAVEL_TYPE]: CURRENT_TRAVEL_TYPE,
+        [ATTRIBUTE_KEY_FOR_TRAVEL_TYPE]: travelTypeToSend,
       },
     });
 

@@ -1,13 +1,19 @@
+// src/personalization/components/PersonalizedHeroBanner.tsx
+
 import React from 'react';
 import { mapHeroBannerEntryToViewModel } from '../mappers/mapHeroBanner';
 import { usePersonalizedHeroBanner } from '../hooks/usePersonalizedHeroBanner';
-import type { PersonalizeVariantResolver } from '../personalizeTypes';
+import type {
+  PersonalizeVariantResolver,
+  TravelType,
+} from '../personalizeTypes';
 
 type PersonalizedHeroBannerProps = {
   experienceId: string;
   contentTypeUid: string;
   fallbackEntryUid: string;
   resolveVariant?: PersonalizeVariantResolver;
+  travelType?: TravelType;
 };
 
 export const PersonalizedHeroBanner: React.FC<PersonalizedHeroBannerProps> = ({
@@ -15,12 +21,14 @@ export const PersonalizedHeroBanner: React.FC<PersonalizedHeroBannerProps> = ({
   contentTypeUid,
   fallbackEntryUid,
   resolveVariant,
+  travelType,
 }) => {
   const { entry, loading, error } = usePersonalizedHeroBanner({
     experienceId,
     contentTypeUid,
     fallbackEntryUid,
     resolveVariant,
+    travelType,
   });
 
   if (loading) {
@@ -78,6 +86,7 @@ export const PersonalizedHeroBanner: React.FC<PersonalizedHeroBannerProps> = ({
               {vm.subtitle}
             </p>
           )}
+
           {vm.descriptionHtml && (
             <div
               style={{ marginTop: 12 }}
@@ -85,7 +94,6 @@ export const PersonalizedHeroBanner: React.FC<PersonalizedHeroBannerProps> = ({
               dangerouslySetInnerHTML={{ __html: vm.descriptionHtml }}
             />
           )}
-
         </div>
 
         {/* Right image */}

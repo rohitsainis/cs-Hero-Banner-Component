@@ -1,8 +1,10 @@
 // src/personalization/personalizeTypes.ts
 
+export type TravelType = 'luxury' | 'Economy' | 'Budget';
+
 export type PersonalizeContext = {
   // extend later if you want to put user data here
-  travelType?: string;
+  travelType?: TravelType;
 };
 
 // Result coming back from Personalize
@@ -17,4 +19,5 @@ export type PersonalizeVariantResult = {
 // Resolver signature that the UI passes into the personalized hook
 export type PersonalizeVariantResolver = (args: {
   experienceId: string;
+  travelType?: TravelType;
 }) => Promise<PersonalizeVariantResult>;

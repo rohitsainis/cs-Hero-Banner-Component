@@ -2,13 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { useHeroBanner } from './useHeroBanner';
-import type { PersonalizeVariantResolver } from '../personalizeTypes';
+import type {
+  PersonalizeVariantResolver,
+  TravelType,
+} from '../personalizeTypes';
 
 type UsePersonalizedHeroBannerArgs = {
   experienceId: string;
   contentTypeUid: string;
   fallbackEntryUid: string;
   resolveVariant?: PersonalizeVariantResolver;
+  travelType?: TravelType;
 };
 
 export function usePersonalizedHeroBanner({
@@ -16,6 +20,7 @@ export function usePersonalizedHeroBanner({
   contentTypeUid,
   fallbackEntryUid,
   resolveVariant,
+  travelType,
 }: UsePersonalizedHeroBannerArgs) {
   const [variantAlias, setVariantAlias] = useState<string | undefined>();
   const [resolverLoading, setResolverLoading] = useState<boolean>(false);
@@ -32,16 +37,18 @@ export function usePersonalizedHeroBanner({
         setResolverLoading(true);
         setResolverError(null);
 
-        const result = await resolveVariant({ experienceId });
+        const result = await resolveVariant({
+          experienceId,
+          travelType,
+        });
 
         if (!cancelled) {
           setVariantAlias(result.variantAlias);
         }
       } catch (e: any) {
         if (!cancelled) {
-          console.error('Error resolving variant:', e);
-          setResolverError(e instanceof Error ? e : new Error(String(e)));
-          setVariantAlias(undefined);
+          console.error('Error resolving variant', e);
+          setResolverError(e);
         }
       } finally {
         if (!cancelled) {
@@ -55,7 +62,7 @@ export function usePersonalizedHeroBanner({
     return () => {
       cancelled = true;
     };
-  }, [experienceId, resolveVariant]);
+  }, [experienceId, travelType, resolveVariant]);
 
   // 2. Fetch the hero entry (with variant if we got one)
   const { entry, loading: heroLoading, error: heroError } = useHeroBanner({
