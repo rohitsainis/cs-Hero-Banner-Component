@@ -1,17 +1,27 @@
 import React from 'react';
-import { useHeroBanner } from '../hooks/useHeroBanner';
 import { mapHeroBannerEntryToViewModel } from '../mappers/mapHeroBanner';
+import { usePersonalizedHeroBanner } from '../hooks/usePersonalizedHeroBanner';
+import type { PersonalizeVariantResolver } from '../personalizeTypes';
 
 type PersonalizedHeroBannerProps = {
+  experienceId: string;
   contentTypeUid: string;
-  entryUid: string;
+  fallbackEntryUid: string;
+  resolveVariant?: PersonalizeVariantResolver;
 };
 
 export const PersonalizedHeroBanner: React.FC<PersonalizedHeroBannerProps> = ({
+  experienceId,
   contentTypeUid,
-  entryUid,
+  fallbackEntryUid,
+  resolveVariant,
 }) => {
-  const { entry, loading, error } = useHeroBanner({ contentTypeUid, entryUid });
+  const { entry, loading, error } = usePersonalizedHeroBanner({
+    experienceId,
+    contentTypeUid,
+    fallbackEntryUid,
+    resolveVariant,
+  });
 
   if (loading) {
     return <div>Loading hero...</div>;
