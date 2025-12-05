@@ -102,15 +102,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 Example `HomePage.tsx`:
 
 ```tsx
-import { PersonalizedHeroBanner } from 'cs-hero-banner-component';
+import { PersonalizedHeroBanner, resolveVariant } from 'cs-hero-banner-component';
 
 export default function HomePage() {
   return (
     <div>
       <PersonalizedHeroBanner
+        experienceId={import.meta.env.VITE_CS_HERO_EXPERIENCE_UID}
         contentTypeUid={import.meta.env.VITE_CS_HERO_CONTENT_TYPE_UID}
-        entryUid={import.meta.env.VITE_CS_HERO_ENTRY_UID}
-        travelType="Luxury"
+        fallbackEntryUid={import.meta.env.VITE_CS_HERO_FALLBACK_UID}
+        travelType="luxury"
+        resolveVariant={resolveVariant}
       />
 
       <div style={{ padding: 24 }}>
