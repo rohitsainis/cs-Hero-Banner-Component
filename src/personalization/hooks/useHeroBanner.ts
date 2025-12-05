@@ -1,77 +1,124 @@
+// src/personalization/hooks/useHeroBanner.ts
+
 import { useEffect, useState } from 'react';
-import { usePersonalizeContext } from '../PersonalizeProvider';
 
-export type HeroBannerEntry = any;
+// ---- Types ----
 
-type UseHeroBannerParams = {
-  contentTypeUid: string; 
-  entryUid: string;
+type UseHeroBannerArgs = {
+  contentTypeUid: string;
+  entryUid: string;            // base entry uid (your Traveler entry)
+  variantAlias?: string;       // e.g. "cs_personalize_0_0"
 };
 
-export function useHeroBanner({ contentTypeUid, entryUid }: UseHeroBannerParams) {
-  const { stack, loading: ctxLoading, error: ctxError } = usePersonalizeContext();
+type HeroBannerState = {
+  entry: any | null;
+  loading: boolean;
+  error: Error | null;
+};
 
-  const [entry, setEntry] = useState<HeroBannerEntry | null>(null);
-  const [loading, setLoading] = useState(true);
+// ---- Helpers ----
+
+// Read env vars (match `main.tsx` / `.env.local` naming: `VITE_CS_*`).
+const API_KEY = import.meta.env.VITE_CS_API_KEY as string;
+const DELIVERY_TOKEN = import.meta.env.VITE_CS_DELIVERY_TOKEN as string;
+const ENVIRONMENT = import.meta.env.VITE_CS_ENVIRONMENT as string;
+const REGION =
+  (import.meta.env.VITE_CS_REGION as
+    | 'NA'
+    | 'EU'
+    | 'AZURE-NA'
+    | 'AZURE-EU'
+    | undefined) ?? 'NA';
+
+function getBaseCdnDomain(region: string): string {
+  switch (region) {
+    case 'EU':
+      return 'eu-cdn.contentstack.com';
+    case 'AZURE-NA':
+      return 'azure-na-cdn.contentstack.com';
+    case 'AZURE-EU':
+      return 'azure-eu-cdn.contentstack.com';
+    default:
+      return 'cdn.contentstack.io';
+  }
+}
+
+// ---- Hook ----
+
+export function useHeroBanner({
+  contentTypeUid,
+  entryUid,
+  variantAlias,
+}: UseHeroBannerArgs): HeroBannerState {
+  const [entry, setEntry] = useState<any | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    console.log('useHeroBanner effect:', {
-      stackDefined: !!stack,
-      ctxLoading,
-      ctxError,
-      contentTypeUid,
-      entryUid,
-    });
+    let cancelled = false;
 
-    if (ctxError) {
-      setError(ctxError);
-      setLoading(false);
-      return;
-    }
-
-    const run = async () => {
-      if (!stack) {
-        console.log('No Contentstack stack available, skipping fetch');
-        setLoading(false);
-        setError(new Error('Contentstack stack is not initialized'));
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
+    async function fetchHero() {
       try {
-        console.log('Fetching from Contentstack...', { contentTypeUid, entryUid });
-        const Entry = stack.ContentType(contentTypeUid).Entry(entryUid);
+        setLoading(true);
+        setError(null);
 
-        Entry.toJSON()
-          .fetch()
-          .then((result: any) => {
-            console.log('CS entry result:', result);
-            setEntry(result);
-            setLoading(false);
-          })
-          .catch((err: any) => {
-            console.error('CS fetch error:', err);
-            setError(err);
-            setLoading(false);
-          });
+        const baseDomain = getBaseCdnDomain(REGION);
+        const url = `https://${baseDomain}/v3/content_types/${contentTypeUid}/entries/${entryUid}?environment=${ENVIRONMENT}`;
+
+        const headers: Record<string, string> = {
+          api_key: API_KEY,
+          access_token: DELIVERY_TOKEN,
+          accept: 'application/json',
+        };
+
+        // 💡 This is the important bit – tell CDA which variant to return
+        if (variantAlias) {
+          headers['x-cs-variant-uid'] = variantAlias;
+        }
+
+        // Debug: log request details (URL + headers). Helpful to reproduce 412 responses.
+        // eslint-disable-next-line no-console
+        console.log('CDA request:', url, headers);
+
+        const res = await fetch(url, { headers });
+
+        if (!res.ok) {
+          let bodyText: string;
+          try {
+            bodyText = await res.text();
+          } catch (e) {
+            bodyText = '<unable to read response body>';
+          }
+
+          throw new Error(
+            `CDA request failed (${res.status} ${res.statusText}) - ${bodyText}`
+          );
+        }
+
+        const json = await res.json();
+
+        if (!cancelled) {
+          setEntry(json.entry ?? null);
+        }
       } catch (e: any) {
-        console.error('CS fetch exception:', e);
-        setError(e);
-        setLoading(false);
+        if (!cancelled) {
+          console.error('CS fetch exception:', e);
+          setError(e instanceof Error ? e : new Error(String(e)));
+          setEntry(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-    };
-
-    if (!ctxLoading) {
-      run();
     }
-  }, [stack, contentTypeUid, entryUid, ctxLoading, ctxError]);
 
-  return {
-    entry,
-    loading,
-    error,
-  };
+    fetchHero();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [contentTypeUid, entryUid, variantAlias]);
+
+  return { entry, loading, error };
 }
