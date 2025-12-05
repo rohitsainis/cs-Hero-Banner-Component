@@ -1,5 +1,3 @@
-// src/personalization/components/PersonalizedHeroBanner.tsx
-
 import React from 'react';
 import { mapHeroBannerEntryToViewModel } from '../mappers/mapHeroBanner';
 import { usePersonalizedHeroBanner } from '../hooks/usePersonalizedHeroBanner';
@@ -90,7 +88,6 @@ export const PersonalizedHeroBanner: React.FC<PersonalizedHeroBannerProps> = ({
           {vm.descriptionHtml && (
             <div
               style={{ marginTop: 12 }}
-              // description is HTML from CMS
               dangerouslySetInnerHTML={{ __html: vm.descriptionHtml }}
             />
           )}

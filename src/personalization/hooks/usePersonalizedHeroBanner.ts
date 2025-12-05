@@ -1,5 +1,3 @@
-// src/personalization/hooks/usePersonalizedHeroBanner.ts
-
 import { useEffect, useState } from 'react';
 import { useHeroBanner } from './useHeroBanner';
 import type {

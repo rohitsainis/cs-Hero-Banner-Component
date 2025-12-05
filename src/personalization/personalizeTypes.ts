@@ -1,9 +1,7 @@
-// src/personalization/personalizeTypes.ts
-
 export type TravelType = 'luxury' | 'Economy' | 'Budget';
 
 export type PersonalizeContext = {
-  // extend later if you want to put user data here
+ 
   travelType?: TravelType;
 };
 

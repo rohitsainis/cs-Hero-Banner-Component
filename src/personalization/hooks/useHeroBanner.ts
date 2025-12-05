@@ -1,5 +1,3 @@
-// src/personalization/hooks/useHeroBanner.ts
-
 import { useEffect, useState } from 'react';
 
 // ---- Types ----
@@ -71,7 +69,7 @@ export function useHeroBanner({
           accept: 'application/json',
         };
 
-        // 💡 This is the important bit – tell CDA which variant to return
+        // This is the important bit – tell CDA which variant to return
         if (variantAlias) {
           headers['x-cs-variant-uid'] = variantAlias;
         }

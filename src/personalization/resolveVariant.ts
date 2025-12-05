@@ -1,18 +1,13 @@
-// src/personalization/resolveVariant.ts
-
 import Personalize from '@contentstack/personalize-edge-sdk';
 import type {
   PersonalizeVariantResolver,
   TravelType,
 } from './personalizeTypes';
 
-// 🔐 From  "Travel Personalization" project
-const PERSONALIZE_PROJECT_UID = '692f4df871b6084e28958c5f';
 
-// From Personalize → Attributes → "Travel Type" → Attribute key
+const PERSONALIZE_PROJECT_UID = '692f4df871b6084e28958c5f';
 const ATTRIBUTE_KEY_FOR_TRAVEL_TYPE = 'travel_type';
 
-// These are the values you used in the audience rules
 // TravelType is imported from personalizeTypes.ts
 
 export const resolveVariant: PersonalizeVariantResolver = async ({
