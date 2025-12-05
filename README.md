@@ -1,78 +1,66 @@
-# Contentstack Hero Banner Component (POC)
+Contentstack Personalized Hero Banner Component (POC)
 
-This repository contains a reusable **React wrapper component** for rendering a **Hero Banner** from Contentstack.
-UI developers can install it directly from GitHub and use it without writing Contentstack Delivery API calls or parsing JSON.
+This repository contains a reusable React wrapper component for rendering a Personalized Hero Banner from Contentstack.
+
+UI developers can install it directly from GitHub and start using it without writing Delivery API code or Personalize API code.
 
 This POC currently supports:
 
-* Contentstack Delivery SDK integration
-* Rendering a Hero Banner from a single entry
-* Plug‑and‑play usage via `<PersonalizeProvider />` and `<PersonalizedHeroBanner />`
+✅ Contentstack Delivery SDK integration
 
-Personalization (Contentstack Personalize Edge SDK) will be added later.
+✅ Contentstack Personalize Edge SDK integration
 
----
+✅ Personalized Hero Banner rendering based on travelType
 
-## 1. Installation (UI Project)
+✅ Full plug-and-play usage via <PersonalizeProvider /> & <PersonalizedHeroBanner />
+
+1. Installation (UI Project)
 
 Install this wrapper directly from GitHub:
 
-```bash
 npm install git+https://github.com/rohitsainis/cs-Hero-Banner-Component.git
-```
+
 
 or
 
-```bash
 yarn add git+https://github.com/rohitsainis/cs-Hero-Banner-Component.git
-```
 
-Import from the package name defined in this repo’s `package.json`:
 
-```ts
+Import components from the package:
+
 import {
   PersonalizeProvider,
   PersonalizedHeroBanner
 } from 'cs-hero-banner-component';
-```
 
----
+2. Required Contentstack Values
 
-## 2. Required Contentstack Values
+UI developers will need the following Contentstack values:
 
-UI developers will need the following values from Contentstack:
+Value	Location in Contentstack
+API Key	Stack Settings → API Keys
+Delivery Token	Stack Settings → Tokens → Delivery Tokens
+Environment Name	Stack Settings → Environments
+Content Type UID	Content Model → Hero Banner → UID
+Entry UID	Content → Hero Banner → Select Entry → UID
 
-| Value                | Where to Find                              |
-| -------------------- | ------------------------------------------ |
-| **API Key**          | Stack Settings → API Keys                  |
-| **Delivery Token**   | Stack Settings → Tokens → Delivery Tokens  |
-| **Environment Name** | Stack Settings → Environments              |
-| **Content Type UID** | Content Model → Hero Banner → UID          |
-| **Entry UID**        | Content → Hero Banner → Select Entry → UID |
+You can store them in .env or pass them directly as props.
 
-These can be stored in `.env` or passed directly as props.
-
----
-
-## 3. Add Environment Variables (recommended)
+3. Add Environment Variables (recommended)
 
 Example for a Vite-based UI project:
 
-```env
 VITE_CS_API_KEY=YOUR_API_KEY
 VITE_CS_DELIVERY_TOKEN=YOUR_DELIVERY_TOKEN
 VITE_CS_ENVIRONMENT=development
+
 VITE_CS_HERO_CONTENT_TYPE_UID=herobanner
 VITE_CS_HERO_ENTRY_UID=YOUR_HERO_ENTRY_UID
-```
 
----
+4. Wrap Your App with PersonalizeProvider
 
-## 4. Wrap the App with `PersonalizeProvider`
+Add the provider at the root of your UI project (main.tsx):
 
-In the UI project’s `main.tsx`:
-
-```tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -92,17 +80,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     >
       <App />
     </PersonalizeProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
-```
 
----
 
-## 5. Render the Hero Banner on Any Page
+This sets up Delivery SDK + Personalize SDK globally.
 
-Example `HomePage.tsx`:
+5. Render a Personalized Hero Banner
 
-```tsx
+Example HomePage.tsx:
+
 import { PersonalizedHeroBanner } from 'cs-hero-banner-component';
 
 export default function HomePage() {
@@ -111,29 +98,64 @@ export default function HomePage() {
       <PersonalizedHeroBanner
         contentTypeUid={import.meta.env.VITE_CS_HERO_CONTENT_TYPE_UID}
         entryUid={import.meta.env.VITE_CS_HERO_ENTRY_UID}
+        travelType="Luxury"   // 👈 Personalization attribute (Luxury | Business | Traveller)
       />
 
       <div style={{ padding: 24 }}>
         <h2>Below the hero banner</h2>
-        <p>This is normal page content under the hero section.</p>
+        <p>This is regular page content under the hero section.</p>
       </div>
     </div>
   );
 }
-```
 
----
+6. How Personalization Works (behind the scenes)
 
-## 6. Running the UI App
+The UI developer does not need to write any logic.
 
-Once everything is configured:
+Internally, the wrapper:
 
-```bash
+Accepts travelType (e.g., "Luxury", "Business", "Traveller").
+
+Sends it to Contentstack Personalize Edge SDK as a live attribute.
+
+Personalize returns the active variant alias (e.g., cs_personalize_0_1).
+
+Wrapper calls Delivery SDK with that variant.
+
+Correct personalized hero banner is rendered.
+
+You only pass travelType — everything else is automatic.
+
+7. Optional: Dynamic travel type
+
+You can use:
+
+Dropdown selection
+
+URL query params
+
+Cookies
+
+Lytics segments
+
+Example:
+
+const travelType = user?.tier === 'premium'
+  ? 'Luxury'
+  : 'Economy';
+
+<PersonalizedHeroBanner
+  contentTypeUid="herobanner"
+  entryUid="blt123..."
+  travelType={travelType}
+/>
+
+8. Running the UI App
+
+After setup:
+
 npm run dev
-```
-
-If the Contentstack values are correct, the hero banner will render successfully.
-
----
 
 
+If your Contentstack credentials and travelType values are correct, your personalized hero banner will render automatically.
