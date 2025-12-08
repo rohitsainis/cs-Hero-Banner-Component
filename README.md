@@ -67,37 +67,8 @@ VITE_CS_HERO_ENTRY_UID=YOUR_HERO_ENTRY_UID
 
 ---
 
-## 4. Wrap the App with `PersonalizeProvider`
 
-In the UI project’s `main.tsx`:
-
-```tsx
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-
-import { PersonalizeProvider } from 'cs-hero-banner-component';
-
-const apiKey = import.meta.env.VITE_CS_API_KEY;
-const deliveryToken = import.meta.env.VITE_CS_DELIVERY_TOKEN;
-const environment = import.meta.env.VITE_CS_ENVIRONMENT;
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <PersonalizeProvider
-      apiKey={apiKey}
-      deliveryToken={deliveryToken}
-      environment={environment}
-    >
-      <App />
-    </PersonalizeProvider>
-  </React.StrictMode>,
-);
-```
-
----
-
-## 5. Render the Hero Banner on Any Page
+## 4. Render the Hero Banner on Any Page
 
 Example `HomePage.tsx`:
 
@@ -114,7 +85,7 @@ export default function HomePage() {
         travelType="luxury"
         resolveVariant={resolveVariant}
       />
-
+ 
       <div style={{ padding: 24 }}>
         <h2>Below the hero banner</h2>
         <p>This is normal page content under the hero section.</p>
@@ -126,7 +97,7 @@ export default function HomePage() {
 
 ---
 
-## 6. Running the UI App
+## 5. Running the UI App
 
 Once everything is configured:
 
