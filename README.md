@@ -75,11 +75,6 @@ export default function HomePage() {
         travelType="luxury"
         resolveVariant={resolveVariant}
       />
- 
-      <div style={{ padding: 24 }}>
-        <h2>Below the hero banner</h2>
-        <p>This is normal page content under the hero section.</p>
-      </div>
     </div>
   );
 }
