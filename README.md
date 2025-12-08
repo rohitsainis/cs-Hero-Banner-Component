@@ -25,16 +25,6 @@ or
 ```bash
 yarn add git+https://github.com/rohitsainis/cs-Hero-Banner-Component.git
 ```
-
-Import from the package name defined in this repo’s `package.json`:
-
-```ts
-import {
-  PersonalizeProvider,
-  PersonalizedHeroBanner
-} from 'cs-hero-banner-component';
-```
-
 ---
 
 ## 2. Required Contentstack Values
